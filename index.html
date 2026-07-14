@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Your Ultimate Video Gallery for Viral Content</title>
+  <style>
+    :root {
+      --bg-gradient: radial-gradient(circle at 50% 50%, #16161c 0%, #08080b 100%);
+      --card-bg: #121216;
+      --text-color: #f3f4f6;
+      --text-muted: #9ca3af;
+      --accent-pink: #ff0050;
+      --accent-cyan: #00f2fe;
+      --shadow-color: rgba(255, 0, 80, 0.25);
+    }
+
+    /* Reset & Base Styles */
+    * {
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg-gradient);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: var(--text-color);
+      text-align: center;
+      padding: 1rem 0.75rem 3rem;
+      margin: 0;
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    header {
+      padding: 2.5rem 1rem 1rem;
+    }
+
+    h1 {
+      font-size: clamp(1.4rem, 5vw, 2.8rem);
+      font-weight: 800;
+      margin: 0 0 0.5rem;
+      background: linear-gradient(45deg, var(--accent-pink), var(--accent-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+    }
+
+    p.subtitle {
+      font-size: clamp(0.85rem, 2.5vw, 1.1rem);
+      color: var(--text-muted);
+      margin: 0;
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1.5rem 0.5rem;
+    }
+
+    /* Grid Layout Responsif */
+    .gallery-container {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    @media (min-width: 640px) {
+      .gallery-container {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .gallery-container {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+      }
+    }
+
+    /* Desain Kartu Video */
+    figure {
+      background-color: var(--card-bg);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      margin: 0;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+      transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), 
+                  box-shadow 0.3s, 
+                  border-color 0.3s;
+      cursor: pointer;
+    }
+
+    figure:hover {
+      transform: translateY(-6px);
+      border-color: rgba(255, 0, 80, 0.35);
+      box-shadow: 0 12px 24px var(--shadow-color);
+    }
+
+    /* Pembungkus Video Preview (Square 1:1) */
+    .video-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #000;
+    }
+
+    .video-wrapper video {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+      transition: transform 0.3s ease;
+    }
+
+    figure:hover .video-wrapper video {
+      transform: scale(1.05);
+    }
+
+    /* Tombol Play Overlay di Tengah */
+    .play-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.9;
+      transition: opacity 0.2s, background-color 0.2s;
+    }
+
+    figure:hover .play-overlay {
+      opacity: 1;
+      background: rgba(0, 0, 0, 0.35);
+    }
+
+    .play-btn {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(45deg, var(--accent-pink), #e00047);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      box-shadow: 0 4px 15px rgba(255, 0, 80, 0.5);
+      transform: scale(0.9);
+      transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    figure:hover .play-btn {
+      transform: scale(1.05);
+    }
+
+    figcaption {
+      margin: 12px 0 10px;
+      font-size: clamp(0.75rem, 2.2vw, 0.95rem);
+      font-weight: 700;
+      color: var(--text-color);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-align: left;
+      padding: 0 4px;
+    }
+
+    /* Tombol Tonton */
+    .video-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 0.7rem 1rem;
+      background: linear-gradient(45deg, #1f2937, #111827);
+      color: #ffffff;
+      text-decoration: none;
+      font-size: clamp(0.75rem, 2vw, 0.85rem);
+      font-weight: 700;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.2s ease;
+      white-space: nowrap; 
+    }
+
+    figure:hover .video-link {
+      background: linear-gradient(45deg, var(--accent-pink), #cc0040);
+      border-color: transparent;
+      box-shadow: 0 4px 12px rgba(255, 0, 80, 0.3);
+    }
+
+    /* Tombol NEXT */
+    .next-container {
+      text-align: center;
+      margin: 3rem 0 2rem;
+    }
+
+    .next-page-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(45deg, var(--accent-pink), #8f00ff);
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 1.1rem;
+      font-weight: 800;
+      padding: 1rem 3.5rem;
+      border-radius: 50px;
+      box-shadow: 0 0 20px rgba(255, 0, 80, 0.4);
+      transition: all 0.3s ease;
+      letter-spacing: 1px;
+      animation: pulseGlow 2s infinite;
+    }
+
+    .next-page-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0 30px rgba(255, 0, 80, 0.7);
+    }
+
+    @keyframes pulseGlow {
+      0% { box-shadow: 0 0 0 0 rgba(255, 0, 80, 0.7); }
+      70% { box-shadow: 0 0 0 15px rgba(255, 0, 80, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(255, 0, 80, 0); }
+    }
+
+    footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 2rem 1rem 1rem;
+      margin-top: 3rem;
+    }
+
+    footer p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Viral Video Gallery</h1>
+    <p class="subtitle">Koleksi Video Viral Terpanas dan Paling Banyak Dicari</p>
+  </header>
+
+  <main>
+    <!-- Galeri video akan di-render di sini oleh JavaScript -->
+    <section class="gallery-container" id="video-gallery"></section>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 Videy.co. All rights reserved.</p>
+  </footer>
+      
+  <script>
+    const MAIN = [
+      {
+        title: "behind the shoes 😂🍆",
+        src: "https://cdn2.videy.co/09BXlQpK1.mp4",
+        target: "https://aaronmwalephotography.github.io/?id=09BXlQpK1",
+        desc: "Relaxing video of beautiful ocean waves."
+      },
+      {
+        title: "he's in a hurry",
+        src: "https://cdn2.videy.co/EwG6lovk1.mp4",
+        target: "https://aaronmwalephotography.github.io/?id=EwG6lovk1",
+        desc: "Relaxing video of beautiful ocean waves."
+      },
+      {
+        title: "I couldn't stand it",
+        src: "https://cdn2.videy.co/oOSDbwM51.mp4",
+        target: "https://aaronmwalephotography.github.io/?id=oOSDbwM51",
+        desc: "Relaxing video of beautiful ocean waves."
+      },
+      {
+        title: "Look at the waves🌊",
+        src: "https://cdn2.videy.co/CTOD38cF1.mp4",
+        target: "https://aaronmwalephotography.github.io/?id=CTOD38cF1",
+        desc: "Relaxing video of beautiful ocean waves."
+      },
+      {
+        title: "tutor i always wanted",
+        src: "https://cdn2.videy.co/VWdxZlVK1.mp4",
+        target: "https://aaronmwalephotography.github.io/?id=VWdxZlVK1",
+        desc: "A video showcasing an ideal or desirable tutor."
+      },
+      {
+        title: "Tiger stripes, fearless",
+        src: "https://cdn2.videy.co/0EE1tHk71.mp4",
+        target: "https://aaronmwalephotography.github.io/?id=0EE1tHk71",
+        desc: "A captivating video highlighting the majestic stripes of a tiger."
+      },
+      {
+        title: "Love got us sweatin",
+        src: "https://cdn2.videy.co/Zs4U6HPh1.mp4",
+        target: "https://aaronmwalephotography.github.io/?id=Zs4U6HPh1",
+        desc: "A dynamic video of people dancing or engaging in a strenuous activity."
+      },
+      {
+        title: "see you in top riding",
+        src: "https://cdn2.videy.co/5Q3e4oaA1.mp4",
+        target: "https://aaronmwalephotography.github.io/?id=5Q3e4oaA1",
+        desc: "A video clip featuring someone excelling in a top riding activity."
+      }
+    ];
+
+    // RENDER GALERI SECARA DINAMIS
+    const container = document.getElementById('video-gallery');
+
+    MAIN.forEach(t => {
+      const figure = document.createElement('figure');
+      figure.setAttribute('itemscope', '');
+      figure.setAttribute('itemtype', 'http://schema.org/VideoObject');
+
+      figure.innerHTML = `
+        <div class="video-wrapper">
+          <video src="${t.src}#t=0.1" 
+            muted 
+            playsinline 
+            preload="metadata">
+          </video>
+          <div class="play-overlay">
+            <span class="play-btn">▶</span>
+          </div>
+        </div>
+        <figcaption itemprop="name">${t.title}</figcaption>
+        <meta itemprop="description" content="${t.desc}" />
+        <meta itemprop="uploadDate" content="2025-08-02" />
+        <a href="${t.target}" class="video-link" aria-label="Watch video: ${t.title}">Watch Video Now</a>
+      `;
+
+      // Jika kartu di-klik di area mana saja, arahkan ke target iklan Anda
+      figure.onclick = () => {
+        window.location.href = t.target;
+      };
+
+      // Efek Autoplay/Preview Video saat Kursor Mengarah ke Kartu (Hover)
+      figure.onmouseenter = () => {
+        const video = figure.querySelector('video');
+        if (video) {
+          video.play().catch(() => {});
+        }
+      };
+
+      // Menghentikan putaran video saat kursor digeser keluar
+      figure.onmouseleave = () => {
+        const video = figure.querySelector('video');
+        if (video) {
+          video.pause();
+          video.currentTime = 0.1; // Mengembalikan frame video ke awal
+        }
+      };
+
+      container.appendChild(figure);
+    });
+
+    // Mencegah masuk ke fullscreen bawaan browser lewat JavaScript
+    document.addEventListener('fullscreenchange', () => {
+      if (document.fullscreenElement) {
+        document.exitFullscreen();
+      }
+    });
+
+    // Proteksi klik kanan dan F12 (Anti Inspect Element)
+    (function () {
+      document.addEventListener('contextmenu', function (e) {
+        if (!e.target.closest('.allow-context, iframe')) {
+          e.preventDefault();
+        }
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === "F12") e.preventDefault();
+        if (e.ctrlKey && e.shiftKey && ["I","J","C"].includes(e.key.toUpperCase())) e.preventDefault();
+        if (e.ctrlKey && ["U","S"].includes(e.key.toUpperCase())) e.preventDefault();
+      });
+    })();
+  </script>
+
+   <!-- Histats.com  START  (aync)-->
+<script type="text/javascript">var _Hasync= _Hasync|| [];
+_Hasync.push(['Histats.start', '1,5009868,4,0,0,0,00010000']);
+_Hasync.push(['Histats.fasi', '1']);
+_Hasync.push(['Histats.track_hits', '']);
+(function() {
+var hs = document.createElement('script'); hs.type = 'text/javascript'; hs.async = true;
+hs.src = ('//s10.histats.com/js15_as.js');
+(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(hs);
+})();</script>
+<noscript><a href="/" target="_blank"><img  src="//sstatic1.histats.com/0.gif?5009868&101" alt="" border="0"></a></noscript>
+<!-- Histats.com  END  -->
+
+</body>
+</html>
